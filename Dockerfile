@@ -88,7 +88,8 @@ RUN if [ -f /etc/apt/sources.list ]; then \
 RUN pip install --no-cache-dir pipx && \
     pipx install poetry && \
     pipx ensurepath
-ENV PATH="/root/.local/bin:${PATH}"
+ENV PATH="/root/.local/bin:$PATH"
+RUN pip install --upgrade pip setuptools wheel
 RUN poetry config virtualenvs.create false
 
 ENV LC_ALL=C.UTF-8
@@ -145,4 +146,4 @@ CMD [ \
     "--logdir", "/logs" \
 ]
 
-EXPOSE 8800
+EXPOSE 8805
