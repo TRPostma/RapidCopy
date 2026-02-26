@@ -89,7 +89,6 @@ RUN pip install --no-cache-dir pipx && \
     pipx install poetry && \
     pipx ensurepath
 ENV PATH="/root/.local/bin:$PATH"
-RUN pip install --upgrade pip setuptools wheel
 RUN poetry config virtualenvs.create false
 
 ENV LC_ALL=C.UTF-8
