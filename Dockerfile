@@ -1,5 +1,5 @@
 # RapidCopy - Single-stage local build Dockerfile
-# Usage: docker build -t rapidcopy:latest .
+# Usage: docker build -t rapidcopy:glibc-fix .
 
 # ============================================
 # Stage 1: Build Angular frontend
@@ -33,14 +33,14 @@ RUN pip install --no-cache-dir pipx && \
     pipx install poetry && \
     pipx ensurepath
 ENV PATH="/root/.local/bin:$PATH"
+RUN pip install --upgrade --force-reinstall pip setuptools wheel
 RUN poetry config virtualenvs.create false
 
 COPY src/python/pyproject.toml src/python/poetry.lock /app/
 WORKDIR /app
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
-RUN poetry install --only main --no-root && \
-    poetry install --only dev --no-root
+RUN poetry install --only main --no-root
 
 COPY src/python /python
 RUN pyinstaller /python/scan_fs.py \
@@ -58,7 +58,6 @@ RUN pyinstaller /python/scan_fs.py \
 FROM python:3.11-slim-bullseye AS runtime
 
 # Install runtime dependencies
-# Handle both old (sources.list) and new (sources.list.d/*.sources) Debian formats
 RUN if [ -f /etc/apt/sources.list ]; then \
         sed -i -e's/ main/ main contrib non-free/g' /etc/apt/sources.list; \
     elif [ -f /etc/apt/sources.list.d/debian.sources ]; then \
@@ -77,7 +76,6 @@ RUN if [ -f /etc/apt/sources.list ]; then \
         libnss-wrapper \
         libxml2-dev libxslt-dev libffi-dev \
         zlib1g-dev \
-        # Network mount support (NFS/SMB/CIFS)
         nfs-common \
         cifs-utils \
         keyutils \
@@ -89,7 +87,7 @@ RUN pip install --no-cache-dir pipx && \
     pipx install poetry && \
     pipx ensurepath
 ENV PATH="/root/.local/bin:$PATH"
-RUN pip install --upgrade pip setuptools wheel
+RUN pip install --upgrade --force-reinstall pip setuptools wheel
 RUN poetry config virtualenvs.create false
 
 ENV LC_ALL=C.UTF-8
