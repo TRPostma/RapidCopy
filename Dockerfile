@@ -19,7 +19,7 @@ RUN npx ng build --configuration production --output-path /build/html
 # ============================================
 # Stage 2: Build scanfs binary
 # ============================================
-FROM python:3.11-slim AS scanfs-builder
+FROM python:3.11-slim-bullseye AS scanfs-builder
 
 RUN apt-get update && apt-get install -y \
     binutils \
@@ -55,7 +55,7 @@ RUN pyinstaller /python/scan_fs.py \
 # ============================================
 # Stage 3: Runtime image
 # ============================================
-FROM python:3.11-slim AS runtime
+FROM python:3.11-slim-bullseye AS runtime
 
 # Install runtime dependencies
 # Handle both old (sources.list) and new (sources.list.d/*.sources) Debian formats
